@@ -86,13 +86,44 @@ end top_basys3;
 architecture top_basys3_arch of top_basys3 is 
   
 	-- declare components
-
-  
-begin
+	
+component clock_divider is
+        generic ( constant k_DIV : natural := 2    );
+        port (     i_clk    : in std_logic;           -- basys3 clk
+                i_reset  : in std_logic;           -- asynchronous
+                o_clk    : out std_logic           -- divided (slow) clock
+        );
+ end component clock_divider;
+ 
+ component thunderbird_fsm is 
+     port (
+     i_clk, i_reset  : in    std_logic;
+     i_left, i_right : in    std_logic;
+     o_lights_L      : out   std_logic_vector(2 downto 0);
+     o_lights_R      : out   std_logic_vector(2 downto 0)
+ );
+  end component thunderbird_fsm;
+ 	signal w_clk : std_logic;		--this wire provides the connection between o_clk and stoplight clk
+ 	
+ begin
 	-- PORT MAPS ----------------------------------------
-
+	clkdiv_inst : clock_divider 		--instantiation of clock_divider to take 
+        generic map ( k_DIV => 25000000 ) -- 5 Hz clock from 100 MHz
+        port map (                          
+            i_clk   => clk,
+            i_reset => btnL,
+            o_clk   => w_clk
+        );  
 	
-	
+    my_thunderbird : thunderbird_fsm
+            port map (
+            i_clk => w_clk,
+            i_reset => btnL,
+            i_left => sw(15),
+            i_right => sw(0),
+            o_lights_L => led(15 downto 13),
+            o_lights_R => led(2 downto 0)
+        );
 	-- CONCURRENT STATEMENTS ----------------------------
 	
 	-- ground unused LEDs
