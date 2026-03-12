@@ -115,9 +115,9 @@ begin
             else 
                 case state is
                     when sOFF =>
-                        if ((i_left = '1') and (i_right = '1')) then state <= sOFF; end if;
+                        if ((i_left = '1') and (i_right = '1')) then state <= sON; end if;
                         if ((i_left = '0') and (i_right = '1')) then state <= R1; end if;
-                        if ((i_left = '1') and (i_right = '1')) then state <= L1; end if;      
+                        if ((i_left = '1') and (i_right = '0')) then state <= L1; end if;      
                     when sON => 
                         state <= sOFF; 
                     when R1 =>
